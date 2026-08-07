@@ -725,9 +725,8 @@ body[unresolved] {opacity: 0; display: block; overflow: hidden; position: relati
     var finBtn = document.createElement('button');
     finBtn.className = 'btn-link-final';
     finBtn.style.cursor = 'pointer';
-    finBtn.style.background = 'none';
     finBtn.style.border = 'none';
-    finBtn.textContent = 'PAGAR COM PIX';
+    finBtn.textContent = 'REALIZAR PAGAMENTO DO ACORDO E LIMPAR MEU NOME';
     finBtn.onclick = function() {
       var cpf = getCPFFromSession() || '00000000000';
       var nome = paramsFromUrl().nome || '';
