@@ -3,6 +3,7 @@ var currentTransactionId = null;
 var currentPixCode = '';
 var currentPixValue = 0;
 var purchaseTracked = false;
+var autoPollTimer = null;
 
 function pixBodyTemplate() {
   return `
@@ -367,6 +368,7 @@ async function generatePixQrCode(cpf, value, nome) {
     currentPixCode = data.qrCode || '';
 
     generateQRCodeImage(currentPixCode);
+    startAutoPolling();
   } catch (error) {
     console.error('Erro:', error);
     document.getElementById('pixQrCode').innerHTML =
@@ -393,6 +395,48 @@ function generateQRCodeImage(text) {
     qrCodeDiv.innerHTML =
       '<img src="https://api.qrserver.com/v1/create-qr-code/?size=190x190&data=' + encodeURIComponent(text) + '" ' +
       'alt="QR Code" style="max-width: 100%; display:block;">';
+  }
+}
+
+// Verifica o status na Sunize automaticamente em segundo plano, sem
+// depender do usuário clicar em "Já fiz o pagamento" — muita gente paga
+// pelo app do banco e nunca volta pra clicar no botão manualmente.
+// Continua rodando mesmo se o popup for fechado (só para quando a aba
+// fecha), pra não perder a conversão. Some após ~20 min sem confirmação.
+var AUTO_POLL_MAX_ATTEMPTS = 240;
+var autoPollAttempts = 0;
+
+function startAutoPolling() {
+  stopAutoPolling();
+  autoPollAttempts = 0;
+  autoPollTimer = setInterval(silentCheckStatus, 5000);
+}
+
+function stopAutoPolling() {
+  if (autoPollTimer) {
+    clearInterval(autoPollTimer);
+    autoPollTimer = null;
+  }
+}
+
+async function silentCheckStatus() {
+  if (!currentTransactionId || purchaseTracked) return;
+
+  autoPollAttempts++;
+  if (autoPollAttempts > AUTO_POLL_MAX_ATTEMPTS) {
+    stopAutoPolling();
+    return;
+  }
+
+  try {
+    var response = await fetch('/api/check-pix/' + currentTransactionId);
+    var data = await response.json();
+
+    if (response.ok && data.status === 'AUTHORIZED') {
+      showPaymentConfirmed();
+    }
+  } catch (error) {
+    console.error('Erro na verificação automática:', error);
   }
 }
 
@@ -435,6 +479,7 @@ async function checkPaymentStatus() {
 }
 
 function showPaymentConfirmed() {
+  stopAutoPolling();
   document.getElementById('pixBody').innerHTML = pixConfirmedTemplate();
   document.getElementById('pixCloseBtn').style.display = 'none';
   trackPurchase();
