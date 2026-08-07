@@ -72,6 +72,27 @@ app.post('/api/generate-pix', async (req, res) => {
   }
 });
 
+// Endpoint para consultar status da transação Pix
+app.get('/api/check-pix/:id', async (req, res) => {
+  try {
+    const response = await axios.get(`${SUNIZE_API_BASE}/transactions/${req.params.id}`, {
+      headers: {
+        'x-api-key': SUNIZE_API_KEY,
+        'x-api-secret': SUNIZE_API_SECRET,
+      },
+      timeout: 10000,
+    });
+
+    res.json({ status: response.data.status });
+  } catch (error) {
+    console.error('Erro ao consultar Pix:', error.response?.data || error.message);
+    res.status(500).json({
+      error: 'Erro ao consultar status',
+      details: error.response?.data?.error || error.message
+    });
+  }
+});
+
 // Redirecionar para index.html se não encontrar arquivo
 app.get('*', (req, res) => {
   res.sendFile(path.join(staticDir, 'index.html'));

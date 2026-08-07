@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Preview — Modal Pix</title>
+<style>
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #eef2f7;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #painel {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    background: #fff;
+    border-radius: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.12);
+    font-size: 13px;
+    max-width: 260px;
+    z-index: 20000;
+  }
+  #painel h3 { margin: 0 0 8px; font-size: 14px; }
+  #painel button {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 8px 10px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12.5px;
+  }
+  #painel button:hover { background: #eef2f7; }
+</style>
+</head>
+<body>
+
+  <div id="painel">
+    <h3>🔧 Preview do Modal Pix</h3>
+    <p style="margin:0; color:#64748b;">Dados simulados (mock), sem backend real.</p>
+    <button onclick="abrirModal()">Reabrir modal</button>
+    <button onclick="simularConfirmado()">Simular pagamento confirmado</button>
+  </div>
+
+  <script>
+    // Mock do backend — intercepta as chamadas que pix-modal.js faz,
+    // assim dá pra ver e ajustar o visual sem precisar rodar o server.js
+    var mockStatus = 'PENDING';
+
+    var realFetch = window.fetch;
+    window.fetch = function (url, options) {
+      if (url === '/api/generate-pix') {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve({
+              ok: true,
+              json: function () {
+                return Promise.resolve({
+                  id: 'preview-transaction-id',
+                  status: 'PENDING',
+                  qrCode: '00020126580014BR.GOV.BCB.PIX0136preview-fake-pix-code-para-visualizacao5204000053039865802BR5913Desenrola BR6008BRASILIA62070503***6304ABCD'
+                });
+              }
+            });
+          }, 900); // simula o tempo de geração do QR
+        });
+      }
+
+      if (String(url).indexOf('/api/check-pix/') === 0) {
+        return new Promise(function (resolve) {
+          setTimeout(function () {
+            resolve({
+              ok: true,
+              json: function () {
+                return Promise.resolve({ status: mockStatus });
+              }
+            });
+          }, 600);
+        });
+      }
+
+      return realFetch.apply(window, arguments);
+    };
+
+    function abrirModal() {
+      mockStatus = 'PENDING';
+      showPixModal('12345678900', 68.92, 'Fulano da Silva');
+    }
+
+    function simularConfirmado() {
+      mockStatus = 'AUTHORIZED';
+      if (!document.getElementById('pixModal') || document.getElementById('pixModal').style.display !== 'flex') {
+        abrirModal();
+        setTimeout(function () { checkPaymentStatus(); }, 1200);
+      } else {
+        checkPaymentStatus();
+      }
+    }
+
+    window.addEventListener('load', function () {
+      setTimeout(abrirModal, 200);
+    });
+  </script>
+
+  <script src="assets/pix-modal.js"></script>
+</body>
+</html>
