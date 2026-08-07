@@ -86,9 +86,7 @@ function createPixModal() {
           <!-- Selos de confiança -->
           <div style="display: flex; justify-content: space-between; gap: 6px; margin: 0 0 22px;">
             <div style="flex: 1; text-align: center;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#32BCAD" style="margin: 0 auto;">
-                <path d="M12 2 L22 12 L12 22 L2 12 Z"></path>
-              </svg>
+              <img src="assets/pix-logo.svg" alt="Pix" width="18" height="18" style="display: block; margin: 0 auto;">
               <p style="margin: 6px 0 0; font-size: 11px; color: #64748b; line-height: 1.3;">Protegido<br>pelo Pix</p>
             </div>
             <div style="flex: 1; text-align: center;">
@@ -196,11 +194,9 @@ function createPixModal() {
               <div style="font-size: 11px; font-weight: 700; color: #334155;">Protegidos</div>
             </div>
           </div>
-          <div style="display: flex; align-items: center; gap: 4px;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="#32BCAD">
-              <path d="M12 2 L22 12 L12 22 L2 12 Z"></path>
-            </svg>
-            <span style="font-size: 15px; font-weight: 800; color: #32BCAD; letter-spacing: -.02em;">pix</span>
+          <div style="display: flex; align-items: center; gap: 5px;">
+            <img src="assets/pix-logo.svg" alt="" width="14" height="14">
+            <span style="font-size: 15px; font-weight: 800; color: #00BEAF; letter-spacing: -.02em;">pix</span>
           </div>
         </div>
 
