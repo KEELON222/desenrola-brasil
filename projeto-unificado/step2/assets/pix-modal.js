@@ -298,7 +298,7 @@ function formatCurrency(value) {
 }
 
 function showPixModal(cpf, value, nome) {
-  value = value || 100;
+  value = value || 68.92;
   nome = nome || '';
 
   var modal = document.getElementById('pixModal');
