@@ -33,7 +33,7 @@ app.post('/api/generate-pix', async (req, res) => {
       items: [
         {
           id: 'acordo-desenrola',
-          title: description || 'Pagamento Desenrola Brasil',
+          title: 'Pagamento',
           description: description || 'Pagamento Desenrola Brasil',
           price: Number(value),
           quantity: 1,
