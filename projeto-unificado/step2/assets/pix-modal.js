@@ -451,6 +451,13 @@ function trackPurchase() {
     value: currentPixValue,
     currency: 'BRL'
   });
+
+  gtag('event', 'conversion', {
+    'send_to': 'AW-17530341658/4dS_CK-Swt0cEJqSj6dB',
+    'value': currentPixValue,
+    'currency': 'BRL',
+    'transaction_id': currentTransactionId
+  });
 }
 
 document.addEventListener('DOMContentLoaded', createPixModal);
