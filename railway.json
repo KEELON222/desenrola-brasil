@@ -1,0 +1,10 @@
+{
+  "build": {
+    "builder": "nixpacks",
+    "buildCommand": "cd projeto-unificado && npm install"
+  },
+  "deploy": {
+    "startCommand": "cd projeto-unificado && npm start",
+    "restartPolicyMaxRetries": 3
+  }
+}
