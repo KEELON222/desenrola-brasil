@@ -102,12 +102,12 @@ function createPixModal() {
   document.body.insertAdjacentHTML('beforeend', html);
 }
 
-function showPixModal(cpf, value = 100) {
+function showPixModal(cpf, value = 100, nome = '') {
   const modal = document.getElementById('pixModal');
   modal.style.display = 'flex';
 
   // Gerar QR Code via API
-  generatePixQrCode(cpf, value);
+  generatePixQrCode(cpf, value, nome);
 }
 
 function closePixModal() {
@@ -129,23 +129,24 @@ function copyPixCode() {
   }, 2000);
 }
 
-async function generatePixQrCode(cpf, value) {
+async function generatePixQrCode(cpf, value, nome) {
   try {
     const response = await fetch('/api/generate-pix', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         cpf: cpf.replace(/\D/g, ''),
+        nome: nome,
         value: value,
         description: 'Pagamento Desenrola Brasil'
       })
     });
 
-    if (!response.ok) {
-      throw new Error('Erro ao gerar QR Code');
-    }
-
     const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.details || data.error || 'Erro ao gerar QR Code');
+    }
 
     // Atualizar o código Pix
     const pixCodeInput = document.getElementById('pixCode');
