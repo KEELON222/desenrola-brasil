@@ -2,6 +2,186 @@
 var currentTransactionId = null;
 var currentPixCode = '';
 
+function pixBodyTemplate() {
+  return `
+    <!-- QR Code -->
+    <div style="position: relative; width: 220px; margin: 0 auto 30px;">
+      <div style="
+        border: 2px dashed #cbd5e1;
+        border-radius: 16px;
+        padding: 14px;
+        background: #fff;
+      ">
+        <div id="pixQrCode" style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 190px;
+        ">
+          <div style="text-align: center; color: #94a3b8;">
+            <div style="
+              width: 30px; height: 30px; margin: 0 auto 10px;
+              border: 3px solid #cbd5e1; border-top-color: #1456D8;
+              border-radius: 50%; animation: pixSpin .8s linear infinite;
+            "></div>
+            <p style="font-size: 12px; margin: 0;">Gerando QR Code...</p>
+          </div>
+        </div>
+      </div>
+      <div id="pixAimPill" style="
+        position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%);
+        background: #fff; border: 1px solid #e5e7eb; border-radius: 999px;
+        padding: 6px 14px; font-size: 12px; color: #475569; font-weight: 600;
+        box-shadow: 0 2px 8px rgba(0,0,0,.08); white-space: nowrap;
+      ">
+        📷 Aponte a câmera
+      </div>
+    </div>
+
+    <!-- Selos de confiança -->
+    <div style="display: flex; justify-content: space-between; gap: 6px; margin: 0 0 22px;">
+      <div style="flex: 1; text-align: center;">
+        <img src="assets/pix-logo.svg" alt="Pix" width="18" height="18" style="display: block; margin: 0 auto;">
+        <p style="margin: 6px 0 0; font-size: 11px; color: #64748b; line-height: 1.3;">Protegido<br>pelo Pix</p>
+      </div>
+      <div style="flex: 1; text-align: center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#32BCAD" style="margin: 0 auto;">
+          <path d="M13 2 L4 14 h6 l-1 8 9-12 h-6 z"></path>
+        </svg>
+        <p style="margin: 6px 0 0; font-size: 11px; color: #64748b; line-height: 1.3;">Liberação em<br>até 2 min.</p>
+      </div>
+      <div style="flex: 1; text-align: center;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1456D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto;">
+          <path d="M12 2 L20 5 V11 C20 16 16.5 20 12 22 C7.5 20 4 16 4 11 V5 Z"></path>
+          <path d="M9 12 l2 2 4-4"></path>
+        </svg>
+        <p style="margin: 6px 0 0; font-size: 11px; color: #64748b; line-height: 1.3;">Ambiente<br>seguro</p>
+      </div>
+    </div>
+
+    <!-- Botão copiar -->
+    <button
+      id="pixCopyBtn"
+      onclick="copyPixCode()"
+      style="
+        width: 100%;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 15px;
+        background: #1456D8;
+        color: #fff;
+        border: none;
+        border-radius: 12px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(20,86,216,.35);
+        margin-bottom: 10px;
+        transition: background .2s;
+      "
+      onmouseover="this.style.background='#0f3fa8'"
+      onmouseout="this.style.background='#1456D8'"
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      Copiar código Pix
+    </button>
+
+    <!-- Botão já paguei -->
+    <button
+      id="pixCheckBtn"
+      onclick="checkPaymentStatus()"
+      style="
+        width: 100%;
+        display: flex; align-items: center; justify-content: center; gap: 8px;
+        padding: 14px;
+        background: #e8f0fe;
+        color: #1456D8;
+        border: none;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 12px;
+        transition: background .2s;
+      "
+      onmouseover="this.style.background='#d9e6fd'"
+      onmouseout="this.style.background='#e8f0fe'"
+    >
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M9 12l2 2 4-4"></path>
+      </svg>
+      Já fiz o pagamento
+    </button>
+
+    <div id="pixStatusMsg" style="min-height: 16px; margin-bottom: 4px;"></div>
+
+    <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
+      Confirmação automática. Se demorar, clique no botão acima.
+    </p>
+  `;
+}
+
+function pixConfirmedTemplate() {
+  return `
+    <div style="text-align: center; padding: 4px 0 2px;">
+      <div style="
+        width: 74px; height: 74px; margin: 4px auto 18px;
+        background: #ecfdf5; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        animation: pixPop .4s cubic-bezier(.34,1.56,.64,1) both;
+      ">
+        <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6 9 17l-5-5"></path>
+        </svg>
+      </div>
+
+      <h3 style="margin: 0 0 6px; font-size: 19px; font-weight: 800; color: #0f172a;">Pagamento confirmado!</h3>
+      <p style="margin: 0 0 22px; font-size: 13.5px; color: #64748b; line-height: 1.45; padding: 0 6px;">
+        Seu acordo com o Desenrola Brasil foi processado com sucesso.
+      </p>
+
+      <div style="
+        display: flex; align-items: center; gap: 12px; text-align: left;
+        background: #f0f6ff; border: 1px solid #dbe7fb; border-radius: 12px;
+        padding: 14px 16px; margin-bottom: 20px;
+      ">
+        <div style="
+          width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+          border: 3px solid #cbd8f5; border-top-color: #1456D8;
+          animation: pixSpin .9s linear infinite;
+        "></div>
+        <div>
+          <p style="margin: 0 0 2px; font-size: 13px; font-weight: 700; color: #1456D8;">Atualizando seu score...</p>
+          <p style="margin: 0; font-size: 12px; color: #5b6b85; line-height: 1.4;">
+            Seu nome será atualizado nos órgãos de proteção ao crédito em instantes.
+          </p>
+        </div>
+      </div>
+
+      <button
+        onclick="closePixModal()"
+        style="
+          width: 100%;
+          padding: 14px;
+          background: #1456D8;
+          color: #fff;
+          border: none;
+          border-radius: 12px;
+          font-size: 14.5px;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(20,86,216,.3);
+        "
+      >
+        Entendi
+      </button>
+    </div>
+  `;
+}
+
 function createPixModal() {
   var html = `
     <div id="pixModal" style="
@@ -48,124 +228,8 @@ function createPixModal() {
           </div>
         </div>
 
-        <div style="padding: 22px;">
-          <!-- QR Code -->
-          <div style="position: relative; width: 220px; margin: 0 auto 30px;">
-            <div style="
-              border: 2px dashed #cbd5e1;
-              border-radius: 16px;
-              padding: 14px;
-              background: #fff;
-            ">
-              <div id="pixQrCode" style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 190px;
-              ">
-                <div style="text-align: center; color: #94a3b8;">
-                  <div style="
-                    width: 30px; height: 30px; margin: 0 auto 10px;
-                    border: 3px solid #cbd5e1; border-top-color: #1456D8;
-                    border-radius: 50%; animation: pixSpin .8s linear infinite;
-                  "></div>
-                  <p style="font-size: 12px; margin: 0;">Gerando QR Code...</p>
-                </div>
-              </div>
-            </div>
-            <div id="pixAimPill" style="
-              position: absolute; bottom: -14px; left: 50%; transform: translateX(-50%);
-              background: #fff; border: 1px solid #e5e7eb; border-radius: 999px;
-              padding: 6px 14px; font-size: 12px; color: #475569; font-weight: 600;
-              box-shadow: 0 2px 8px rgba(0,0,0,.08); white-space: nowrap;
-            ">
-              📷 Aponte a câmera
-            </div>
-          </div>
-
-          <!-- Selos de confiança -->
-          <div style="display: flex; justify-content: space-between; gap: 6px; margin: 0 0 22px;">
-            <div style="flex: 1; text-align: center;">
-              <img src="assets/pix-logo.svg" alt="Pix" width="18" height="18" style="display: block; margin: 0 auto;">
-              <p style="margin: 6px 0 0; font-size: 11px; color: #64748b; line-height: 1.3;">Protegido<br>pelo Pix</p>
-            </div>
-            <div style="flex: 1; text-align: center;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#32BCAD" style="margin: 0 auto;">
-                <path d="M13 2 L4 14 h6 l-1 8 9-12 h-6 z"></path>
-              </svg>
-              <p style="margin: 6px 0 0; font-size: 11px; color: #64748b; line-height: 1.3;">Liberação em<br>até 2 min.</p>
-            </div>
-            <div style="flex: 1; text-align: center;">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1456D8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto;">
-                <path d="M12 2 L20 5 V11 C20 16 16.5 20 12 22 C7.5 20 4 16 4 11 V5 Z"></path>
-                <path d="M9 12 l2 2 4-4"></path>
-              </svg>
-              <p style="margin: 6px 0 0; font-size: 11px; color: #64748b; line-height: 1.3;">Ambiente<br>seguro</p>
-            </div>
-          </div>
-
-          <!-- Botão copiar -->
-          <button
-            id="pixCopyBtn"
-            onclick="copyPixCode()"
-            style="
-              width: 100%;
-              display: flex; align-items: center; justify-content: center; gap: 8px;
-              padding: 15px;
-              background: #1456D8;
-              color: #fff;
-              border: none;
-              border-radius: 12px;
-              font-size: 15px;
-              font-weight: 700;
-              cursor: pointer;
-              box-shadow: 0 4px 14px rgba(20,86,216,.35);
-              margin-bottom: 10px;
-              transition: background .2s;
-            "
-            onmouseover="this.style.background='#0f3fa8'"
-            onmouseout="this.style.background='#1456D8'"
-          >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="9" width="13" height="13" rx="2"></rect>
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
-            Copiar código Pix
-          </button>
-
-          <!-- Botão já paguei -->
-          <button
-            id="pixCheckBtn"
-            onclick="checkPaymentStatus()"
-            style="
-              width: 100%;
-              display: flex; align-items: center; justify-content: center; gap: 8px;
-              padding: 14px;
-              background: #e8f0fe;
-              color: #1456D8;
-              border: none;
-              border-radius: 12px;
-              font-size: 14px;
-              font-weight: 700;
-              cursor: pointer;
-              margin-bottom: 12px;
-              transition: background .2s;
-            "
-            onmouseover="this.style.background='#d9e6fd'"
-            onmouseout="this.style.background='#e8f0fe'"
-          >
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M9 12l2 2 4-4"></path>
-            </svg>
-            Já fiz o pagamento
-          </button>
-
-          <div id="pixStatusMsg" style="min-height: 16px; margin-bottom: 4px;"></div>
-
-          <p style="margin: 0; font-size: 12px; color: #94a3b8; text-align: center;">
-            Confirmação automática. Se demorar, clique no botão acima.
-          </p>
+        <div id="pixBody" style="padding: 22px;">
+          ${pixBodyTemplate()}
         </div>
 
         <!-- Rodapé de confiança -->
@@ -201,6 +265,7 @@ function createPixModal() {
         </div>
 
         <button
+          id="pixCloseBtn"
           onclick="closePixModal()"
           style="
             width: 100%;
@@ -221,6 +286,7 @@ function createPixModal() {
     <style>
       @keyframes pixModalIn { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
       @keyframes pixSpin { to { transform: rotate(360deg); } }
+      @keyframes pixPop { from { opacity: 0; transform: scale(.5); } to { opacity: 1; transform: scale(1); } }
     </style>
   `;
 
@@ -238,10 +304,8 @@ function showPixModal(cpf, value, nome) {
   var modal = document.getElementById('pixModal');
   modal.style.display = 'flex';
   document.getElementById('pixValue').textContent = formatCurrency(value);
-  document.getElementById('pixStatusMsg').innerHTML = '';
-  document.getElementById('pixAimPill').style.display = '';
-  document.getElementById('pixCopyBtn').style.display = 'flex';
-  document.getElementById('pixCheckBtn').style.display = 'flex';
+  document.getElementById('pixBody').innerHTML = pixBodyTemplate();
+  document.getElementById('pixCloseBtn').style.display = '';
 
   generatePixQrCode(cpf, value, nome);
 }
@@ -359,25 +423,16 @@ async function checkPaymentStatus() {
   } catch (error) {
     statusMsg.innerHTML = '<p style="margin:0; font-size:12px; color:#dc2626;">' + error.message + '</p>';
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = originalHtml;
+    if (document.getElementById('pixCheckBtn')) {
+      btn.disabled = false;
+      btn.innerHTML = originalHtml;
+    }
   }
 }
 
 function showPaymentConfirmed() {
-  var qrCodeDiv = document.getElementById('pixQrCode');
-  qrCodeDiv.innerHTML =
-    '<div style="text-align:center; padding: 20px 0;">' +
-    '<svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 10px;">' +
-    '<circle cx="12" cy="12" r="10"></circle><path d="M8 12l3 3 5-6"></path>' +
-    '</svg>' +
-    '<p style="margin:0; font-weight:700; color:#16a34a; font-size:15px;">Pagamento confirmado!</p>' +
-    '</div>';
-
-  document.getElementById('pixCopyBtn').style.display = 'none';
-  document.getElementById('pixCheckBtn').style.display = 'none';
-  document.getElementById('pixAimPill').style.display = 'none';
-  document.getElementById('pixStatusMsg').innerHTML = '';
+  document.getElementById('pixBody').innerHTML = pixConfirmedTemplate();
+  document.getElementById('pixCloseBtn').style.display = 'none';
 }
 
 document.addEventListener('DOMContentLoaded', createPixModal);
