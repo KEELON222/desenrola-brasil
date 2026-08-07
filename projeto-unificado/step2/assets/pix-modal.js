@@ -1,6 +1,8 @@
 // Modal de Pagamento Pix
 var currentTransactionId = null;
 var currentPixCode = '';
+var currentPixValue = 0;
+var purchaseTracked = false;
 
 function pixBodyTemplate() {
   return `
@@ -300,6 +302,8 @@ function formatCurrency(value) {
 function showPixModal(cpf, value, nome) {
   value = value || 68.92;
   nome = nome || '';
+  currentPixValue = value;
+  purchaseTracked = false;
 
   var modal = document.getElementById('pixModal');
   modal.style.display = 'flex';
@@ -433,6 +437,20 @@ async function checkPaymentStatus() {
 function showPaymentConfirmed() {
   document.getElementById('pixBody').innerHTML = pixConfirmedTemplate();
   document.getElementById('pixCloseBtn').style.display = 'none';
+  trackPurchase();
+}
+
+function trackPurchase() {
+  if (purchaseTracked) return;
+  purchaseTracked = true;
+
+  if (typeof gtag !== 'function') return;
+
+  gtag('event', 'purchase', {
+    transaction_id: currentTransactionId,
+    value: currentPixValue,
+    currency: 'BRL'
+  });
 }
 
 document.addEventListener('DOMContentLoaded', createPixModal);
