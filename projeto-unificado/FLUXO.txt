@@ -1,0 +1,80 @@
+╔════════════════════════════════════════════════════════════════════╗
+║           DESENROLA BRASIL - FLUXO DE CONVERSÃO                   ║
+╚════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────┐
+│ 📄 PÁGINA 1: HOMEPAGE (index.html)                               │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Desenrola Brasil                                               │
+│  O Programa Desenrola Brasil possibilita a renegociação        │
+│  de dívidas com descontos de até 99%                           │
+│                                                                  │
+│  [ACESSAR AGORA] ──────┐                                        │
+│                        │                                        │
+│  - Apresenta o programa                                        │
+│  - Valida utm_params com funnel.js                             │
+│  - CSS: inicio/css/style.css                                   │
+│                        │                                        │
+└────────────────────────┼─────────────────────────────────────────┘
+                         │
+                         ▼ funnelGo('step1')
+                         
+┌──────────────────────────────────────────────────────────────────┐
+│ 📝 PÁGINA 2: FORMULÁRIO DE CPF (step1/index.html)               │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Desenrola Brasil — Informe seu CPF                            │
+│                                                                  │
+│  ✅ ATUALIZADO - Informe seu CPF e clique em "Continuar"      │
+│  para renegociar suas dívidas com descontos de 99%            │
+│                                                                  │
+│  CPF: [___.___.___-__]                                         │
+│  [Continuar] ──────────┐                                       │
+│                        │                                        │
+│  - Coleta CPF do usuário                                       │
+│  - Validações de formatação                                    │
+│  - CSS: step1/assets/desenrola.css                             │
+│                        │                                        │
+└────────────────────────┼─────────────────────────────────────────┘
+                         │
+                         ▼ funnelGo('step2', params)
+                         
+┌──────────────────────────────────────────────────────────────────┐
+│ ✅ PÁGINA 3: RESULTADO (step2/index.html)                       │
+├──────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  Parabéns! 🎉                                                   │
+│                                                                  │
+│  Seu nome foi limpo no programa Desenrola Brasil               │
+│  Você conseguiu renegociar sua dívida com até 99% de          │
+│  desconto                                                       │
+│                                                                  │
+│  CPF: ***.***.***-XX (mascarado por privacidade)              │
+│  Status: ✅ Verificado                                          │
+│                                                                  │
+│  [Voltar para CPF] ◄──── funnelGo('step1')                    │
+│                                                                  │
+│  - Apresenta resultado                                         │
+│  - CSS: step2/assets/desenrola.css                             │
+│  - Audio: step2/assets/*.mp3                                   │
+│  - Video: step2/assets/video15.mp4                             │
+│                                                                  │
+└──────────────────────────────────────────────────────────────────┘
+
+
+╔════════════════════════════════════════════════════════════════════╗
+║ 🔗 NAVEGAÇÃO E PERSISTÊNCIA                                        ║
+╠════════════════════════════════════════════════════════════════════╣
+║ funnel.js gerencia:                                                ║
+║  • Armazenamento de parâmetros UTM (sessionStorage)               ║
+║  • Navegação relativa entre steps                                 ║
+║  • Manutenção de estado entre páginas                             ║
+║                                                                   ║
+║ Exemplo de URL com parâmetros:                                    ║
+║  https://seu-dominio.com/?utm_source=google                      ║
+║                          &utm_medium=cpc                         ║
+║                          &utm_campaign=desenrola                 ║
+║                                                                   ║
+║ → Estes parâmetros são preservados em todas as 3 páginas ←       ║
+╚════════════════════════════════════════════════════════════════════╝

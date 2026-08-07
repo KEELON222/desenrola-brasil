@@ -1,0 +1,90 @@
+╔════════════════════════════════════════════════════════════════════╗
+║        DEPLOY RÁPIDO NA RAILWAY - PASSO A PASSO                   ║
+╚════════════════════════════════════════════════════════════════════╝
+
+🎯 RESUMO DO QUE FAREMOS:
+  1. Criar repositório GitHub
+  2. Fazer upload do código
+  3. Conectar Railway
+  4. Deploy automático!
+
+════════════════════════════════════════════════════════════════════
+
+📋 PASSO 1: PREPARAR GIT LOCALMENTE
+
+Abra o terminal na pasta "projeto-unificado" e execute:
+
+$ git init
+$ git add .
+$ git commit -m "Initial commit - Desenrola Brasil"
+
+════════════════════════════════════════════════════════════════════
+
+🐙 PASSO 2: CRIAR REPOSITÓRIO NO GITHUB
+
+1. Acesse: https://github.com/new
+2. Clique em "Create repository"
+3. Nome: desenrola-brasil (ou outro nome)
+4. Descrição: "Programa Desenrola Brasil - Renegociação de dívidas"
+5. Selecione: Public (para Railway conseguir acessar)
+6. Clique: "Create repository"
+
+════════════════════════════════════════════════════════════════════
+
+⬆️ PASSO 3: FAZER PUSH PARA GITHUB
+
+Copie as 3 linhas abaixo e cole no terminal:
+
+$ git remote add origin https://github.com/SEU_USUARIO/desenrola-brasil.git
+$ git branch -M main
+$ git push -u origin main
+
+Troque "SEU_USUARIO" pelo seu usuário GitHub!
+
+════════════════════════════════════════════════════════════════════
+
+🚀 PASSO 4: DEPLOY NA RAILWAY
+
+1. Acesse: https://railway.app/dashboard
+2. Clique em: "+ New Project"
+3. Selecione: "Deploy from GitHub"
+4. Conecte sua conta GitHub
+5. Escolha: "desenrola-brasil"
+6. Clique: "Deploy"
+
+Pronto! Railway fará todo o resto! ✅
+
+════════════════════════════════════════════════════════════════════
+
+📍 ACESSAR SEU SITE
+
+Após ~2 minutos, seu site estará em:
+
+  https://desenrola-brasil-production.up.railway.app
+
+(ou a URL que Railway gerar)
+
+════════════════════════════════════════════════════════════════════
+
+🔄 ATUALIZAR SITE (depois)
+
+Sempre que fizer mudanças:
+
+$ git add .
+$ git commit -m "Descrição da mudança"
+$ git push origin main
+
+Railway fará deploy AUTOMÁTICO! 🤖
+
+════════════════════════════════════════════════════════════════════
+
+📌 ARQUIVOS JÁ CONFIGURADOS:
+
+✅ package.json     → Configuração Node.js
+✅ server.js        → Servidor Express
+✅ Procfile         → Instruções para Railway
+✅ .gitignore       → Arquivos a ignorar
+
+Tudo pronto para Railway! 🎉
+
+════════════════════════════════════════════════════════════════════

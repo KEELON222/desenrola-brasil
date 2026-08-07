@@ -1,0 +1,23 @@
+{
+    "source": "https://www-acordodesenrola2026.com/step1/",
+    "rippedAt": "2026-08-07T01:57:28+00:00",
+    "files": [
+        "index.html",
+        "funnel.js",
+        "step1/assets/header.js.download",
+        "_external/static.cloudflareinsights.com/beacon.min.js/v4513226cdae34746b4dedf0b4dfa099e1781791509496",
+        "step1/assets/iconegov.png",
+        "step1/assets/limpenome.png",
+        "step1/assets/iconefooter.png",
+        "_external/www.novoagora.online/images/icons8-brasil-windows-11-color-96.png",
+        "_external/www.novoagora.online/images/icons8-brasil-windows-11-color-32.png",
+        "_external/www.novoagora.online/images/icons8-brasil-windows-11-color-16.png",
+        "step1/assets/css2",
+        "step1/assets/desenrola.css",
+        "assets/css/desenrola.css"
+    ],
+    "errors": [
+        "https://www.googletagmanager.com/gtm.js?id=: HTTP 400",
+        "https://www-acordodesenrola2026.com/cdn-cgi/zaraz/s.js?z=: HTTP 400"
+    ]
+}
